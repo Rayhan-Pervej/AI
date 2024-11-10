@@ -12,10 +12,10 @@ graph = {
 
 
 
-def iterative_deepening_search(graph, start, goal, max_depth):
+def ids(graph, start, goal, max_depth):
 
     for depth in range(1, max_depth + 1):
-        # Initialize frontier with the start node and initial depth
+        
         frontier = [(start, [start], depth)]
         
         while frontier:
@@ -35,10 +35,10 @@ def iterative_deepening_search(graph, start, goal, max_depth):
     # If goal is not found within max_depth
     return None
 
-
+# Initialize frontier with the start node and initial depth
 start_node = 'A'  # Starting point of the search
 goal_node = 'H'   # Target node to search for
 max_depth=4
-path_to_goal = iterative_deepening_search(graph, start_node, goal_node, max_depth)
+path_to_goal = ids(graph, start_node, goal_node, max_depth)
 print("Path to goal:", path_to_goal)
 
