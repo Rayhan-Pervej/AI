@@ -1,8 +1,17 @@
+### input instruction ###
+
+# Run this program in google colab
+# First upload the input files in cloab "Files". Then write the inputed file name in the "main()" function vairable inputFile= "here..".
+# example inputFile = "input1.txt"
+# Output will appear in code cell output. 
+# It can solve https://www.calcudoku.org/ this website puzzle maybe.
+
+
 from itertools import permutations
 from math import prod
 
 
-class calcudokoSolver:
+class calcudokuSolver:
   def __init__(self, size, blocks):
     self.size = size
     self.blocks = blocks
@@ -35,47 +44,47 @@ class calcudokoSolver:
 
     # Operation based clues
     target, operation = int(clue[:-1]), clue[-1]
-    current_nums = [self.grid[r][c] for r, c in cells if self.grid[r][c] != 0]
-    current_nums.append(num)
+    currentNums = [self.grid[r][c] for r, c in cells if self.grid[r][c] != 0]
+    currentNums.append(num)
 
-    if len(current_nums) > len(cells):
+    if len(currentNums) > len(cells):
       return False
 
     if operation == '+':
-      if len(current_nums) == len(cells):
-        return sum(current_nums) == target
-      return sum(current_nums) <= target
-    
+      if len(currentNums) == len(cells):
+        return sum(currentNums) == target
+      return sum(currentNums) <= target
+
     # elif operation == '-':
-    #   if len(current_nums) < len(cells):
+    #   if len(currentNums) < len(cells):
     #       return True  # only when block is full
-    #   return abs(current_nums[0] - current_nums[1]) == target
+    #   return abs(currentNums[0] - currentNums[1]) == target
     #   return False
-    
-##### TODO: try to solve 0-
+
+##### : 0-
 
     elif operation == '-':
-      if len(current_nums) < len(cells):
+      if len(currentNums) < len(cells):
           return True  # More numbers to be placed in the block
       # all permutations of current numbers
-      for perm in permutations(current_nums):
+      for perm in permutations(currentNums):
           largest = perm[0]
-          rest_sum = sum(perm[1:])
-          if largest - rest_sum == target:
+          restSum = sum(perm[1:])
+          if largest - restSum == target:
               return True
       return False
 
     elif operation == '*':
-      if len(current_nums) == len(cells):
-        return prod(current_nums) == target
-      return prod(current_nums) <= target
+      if len(currentNums) == len(cells):
+        return prod(currentNums) == target
+      return prod(currentNums) <= target
 
     elif operation == '/':
-      if len(current_nums) < len(cells):
+      if len(currentNums) < len(cells):
           return True  # more numbers to be placed in the block
       if len(cells) == 2:
           # two cells are filled, check the division condition
-          n1, n2 = current_nums[0], current_nums[1]
+          n1, n2 = currentNums[0], currentNums[1]
           return (n1 / n2 == target or n2 / n1 == target) if n1 != 0 and n2 != 0 else False
       return False
 
@@ -96,9 +105,9 @@ class calcudokoSolver:
         return self.backTrace(nextRow, nextCol)
 
     # possible numbers for the current cell
-    possible_numbers = [num for num in range(1, self.size + 1) if self.checkValid(row, col, num)]
+    possibleNumbers = [num for num in range(1, self.size + 1) if self.checkValid(row, col, num)]
 
-    for num in possible_numbers:
+    for num in possibleNumbers:
         self.grid[row][col] = num
         if self.backTrace(nextRow, nextCol):
             return True
@@ -111,32 +120,47 @@ class calcudokoSolver:
     for row in self.grid:
       print(" ".join(map(str, row)))
 
-# end of calcudokosolver class
+# end of calcudokuSolver class
 
 # input part
 def input(inputFile):
   with open(inputFile, 'r') as file:
-    lines = file.readlines()
+      lines = file.readlines()
 
-  size = int(lines[0].strip())
+  
+  grid_dimensions = lines[0].strip().split()
+  size = int(grid_dimensions[0])
+
+  
   totalBlocks = int(lines[1].strip())
-  clueBlocks = []
 
-  for i in range(totalBlocks):
-    line = lines[2+i].strip().split()
-    hint = line[0]
-    cells=[(int(line[j]) -1, int(line[j+1]) - 1,) for j in range(1, len(line), 2)]
-    clueBlocks.append({'clue': hint, 'cells': cells})
+  clueBlocks = []
+  index = 2  # Starting line for clues and cells
+
+  while index < len(lines):
+      # clue
+      clue = lines[index].strip()
+      index += 1
+
+      # cell positions
+      cellLine = lines[index].strip().split()
+      cells = [(int(cellLine[i]) - 1, int(cellLine[i + 1]) - 1) for i in range(0, len(cellLine), 2)]
+      index += 1
+
+      # Append
+      clueBlocks.append({'clue': clue, 'cells': cells})
 
   return size, clueBlocks
 
 
+
 # main
 def main():
-  inputFile = "input1.txt" # Need to add the file name like input.text
-  puzzleSize, clueBlocks = input(inputFile) #definning the puzzle
 
-  result = calcudokoSolver(puzzleSize, clueBlocks) #CSP
+  inputFile = "input1.txt" #First upload the input files in cloab "Files". Then write the input name in the "main()" function vairable inputFIle using " ".
+  
+  puzzleSize, clueBlocks = input(inputFile) #definning the puzzle
+  result = calcudokuSolver(puzzleSize, clueBlocks) #CSP
 
   #Result Part
   if result.solve():
@@ -144,6 +168,5 @@ def main():
 
   else:
     print("No Solution Exists")
-
 
 main()
